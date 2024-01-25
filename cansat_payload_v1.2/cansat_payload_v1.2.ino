@@ -47,7 +47,7 @@ const uint8_t MPU6050_REGISTER_SIGNAL_PATH_RESET = 0x68;
 
 int16_t AccelX, AccelY, AccelZ, Temperature, GyroX, GyroY, GyroZ;
 
-const char* ssid = "Dott";  // Replace with your network SSID
+const char* ssid = "EDUCAN_MINI";  // Replace with your network SSID
 const char* password = "1234567890";  // Replace with your network password
 
 AsyncWebServer server(80);
@@ -70,13 +70,13 @@ void setup() {
     return;
   }
 
-  // WiFi.begin(ssid, password);
-  //
-  // while (WiFi.status() != WL_CONNECTED) {
-  //   delay(1000);
-  //   Serial.println("Connecting to WiFi...");
-  // }
-  // Serial.println("Connected to WiFi");
+//   WiFi.begin(ssid, password);
+//  
+//   while (WiFi.status() != WL_CONNECTED) {
+//     delay(1000);
+//     Serial.println("Connecting to WiFi...");
+//   }
+//   Serial.println("Connected to WiFi");
   
   WiFi.softAP(ssid, password);
   Serial.print("AP IP address: ");
@@ -165,11 +165,15 @@ String getAltitude() {
 
 String getVbat() {
 
-  double vbat;
-
-  vbat = analogRead(A0);
-  //vbat = map(analogRead(A0), 0, 1023, 0, 5) * 2; // using same resistors
-  vbat = vbat * 0.0069;  // offset value
+  double vbat,sensorValue;
+  sensorValue =analogRead(A0);
+  vbat= 2*sensorValue * (3.15 / 1023.0);
+// 
+//  vo = (3.7/1023)*analogRead(A0);
+//   vbat = 2*vo;
+//  vbat = map(analogRead(A0)*2, 0, 255, 0, 3.7); // using same resistors
+//  vbat = vbat * 0.0069;  // offset value
+  
 
   return String(vbat);
 }
