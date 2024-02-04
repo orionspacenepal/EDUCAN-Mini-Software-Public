@@ -53,18 +53,13 @@ const char *password = "1234567890"; // Replace with your network password
 AsyncWebServer server(80);
 //bool isDataReady = false;
 unsigned long lastLogTime = 0;
-const unsigned long logInterval = 1000;
-const unsigned int maxLogEntries = 1000;
+const unsigned long logInterval = 500;
+const unsigned int maxLogEntries = 1452;
 
 File logFile;
 
 bool extractLogFiles = false;
 
-String processor(const String &var)
-{
-  Serial.println(var);
-  return String();
-}
 void MPU6050_Init()
 {
   delay(150);
@@ -182,36 +177,11 @@ void Read_RawValue(uint8_t deviceAddress, uint8_t regAddress)
   GyroZ = (((int16_t)Wire.read() << 8) | Wire.read());
 }
 
-void handleDataExtraction(AsyncWebServerRequest *request) {
-  extractLogFiles = true; // Set the trigger
-//  handleDataLogging();    // Log data when extraction is triggered
-
-  // Read the log file and send its content
-  logFile = LittleFS.open("/log.txt", "r");
-  if (logFile) {
-    size_t fileSize = logFile.size();
-    if (fileSize > 0) {
-      char *logContent = (char *)malloc(fileSize + 1);
-      if (logContent) {
-        logFile.readBytes(logContent, fileSize);
-        logContent[fileSize] = '\0'; // Null-terminate the string
-        request->send(200, "text/plain", logContent);
-        free(logContent);
-      }
-    }
-    logFile.close();
-  }
-  else {
-    request->send(500, "text/plain", "Error reading log file");
-  }
-}
-
 
 String logData()
 {
-    Serial.println("inside logdata");
   String logEntry;
- logFile= LittleFS.open("/log.txt", "a+");
+  logFile= LittleFS.open("/log.txt", "a+");
   if (logFile)
   {
     
@@ -222,57 +192,28 @@ String logData()
 
     logFile.println(logEntry);
     logFile.flush();
-//    isDataReady = false;
-
     checkAndTrimLogFile();    
   }
   return logEntry;
   logFile.close();
 }
-//void checkAndTrimLogFile()
-//{
-//  File tempFile = LittleFS.open("/temp.txt", "w");
-//  if (tempFile)
-//  {
-//    File originalFile = LittleFS.open("/log.txt", "r");
-//    if (originalFile)
-//    {
-//      int count = 0;
-//      while (originalFile.available() && count < maxLogEntries)
-//      {
-//        tempFile.write(originalFile.read());
-//        count++;
-//      }
-//      originalFile.close();
-//    }
-//    tempFile.close();
-//
-//    LittleFS.remove("/log.txt");
-//    LittleFS.rename("/temp.txt", "/log.txt");
-//  }
-//}
 
 void checkAndTrimLogFile()
 {
-  // Check if the log file exists
   if (LittleFS.exists("/log.txt"))
   {
-    // Open log file in read-only mode
     logFile = LittleFS.open("/log.txt", "r");
     if (logFile)
     {
       File tempFile = LittleFS.open("/temp.txt", "w");
       if (tempFile)
       {
-        // Write the header to the temp file
         tempFile.println("Temperature,Pressure,Altitude,Battery Voltage,Ax,Ay,Az,Gx,Gy,Gz");
         tempFile.flush();
 
         int count = 0;
         // Skip the header line in the original file
         logFile.readStringUntil('\n');
-
-        // Copy the last 1000 entries to the temp file
         while (logFile.available() && count < maxLogEntries)
         {
           tempFile.write(logFile.read());
@@ -281,10 +222,7 @@ void checkAndTrimLogFile()
         tempFile.close();
       }
       logFile.close();
-
-      // Remove the original log file
       LittleFS.remove("/log.txt");
-      // Rename temp file to log file
       LittleFS.rename("/temp.txt", "/log.txt");
     }
   }
@@ -356,21 +294,10 @@ void setup()
             { request->send_P(200, "text/plain", getGy().c_str()); });
   server.on("/gz", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send_P(200, "text/plain", getGz().c_str()); 
-             
              });
-  Serial.println("till MPU end point");
-  // Additional route for file extraction
-//   server.on("/logdata", HTTP_GET, [](AsyncWebServerRequest *request) {
-//        handleDataLogging();    // Log data when extraction is triggered
-//    });
-    Serial.println("logdata end point");
     server.on("/triggerExtract", HTTP_GET, [](AsyncWebServerRequest *request)
     {
     extractLogFiles = true; // Set the trigger
-//    handleDataLogging();
-//    handleDataExtraction(request);    // Log data when extraction is triggered
-
-    // Read the content of the log file
    logFile = LittleFS.open("/log.txt", "r");
     if (logFile)
     {
@@ -389,5 +316,4 @@ server.begin();
 
 void loop()
 {
-
 }
