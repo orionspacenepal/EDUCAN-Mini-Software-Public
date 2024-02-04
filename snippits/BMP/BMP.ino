@@ -12,14 +12,14 @@ void setup()
 void loop()
 {
     double Altitude = bmp.readAltitude();
-    double Pressure = bmp.readPressure()
+    double Pressure = bmp.readPressure();
     double Temperature = bmp.readTemperature();
-  String packet = "BMP:";
-  packet += Altitude;
-  packet += " m in , ";
-  packet += Pressure();
-  packet += " hPa pressure &, ";
-  packet += Temperature;
-  packet += "°C";
-  Serial.println(packet);
+    String packet = "BMP:";
+    packet += Altitude;
+    packet += " m in , ";
+    packet += Pressure;
+    packet += " hPa pressure &, ";
+    packet += Temperature;
+    packet += "°C";
+    Serial.println(packet);
 }
