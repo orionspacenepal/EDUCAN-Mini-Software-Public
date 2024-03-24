@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EDUCAN-MINI PAYLOAD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="highcharts.js"></script>
+  </head>
+  <body>
+    <h1>EDUCAN-MINI PAYLOAD</h1>
+    <p>
+      <span class="sensor-labels">Battery Voltage: </span>
+      <span id="vbat">%vbat%</span>
+      <span class="units"> V</span>
+    </p>
+    <div class="row">
+      <div class="column" id="chart-temperature"></div>
+      <div class="column" id="chart-pressure"></div>
+      <div class="column" id="chart-altitude"></div>
+    </div>
+    <div class="row">
+      <div class="column" id="chart-ax"></div>
+      <div class="column" id="chart-ay"></div>
+      <div class="column" id="chart-az"></div>
+    </div>
+    <div class="row">
+      <div class="column" id="chart-gx"></div>
+      <div class="column" id="chart-gy"></div>
+      <div class="column" id="chart-gz"></div>
+    </div>
+  </body>
+  <script>
+    var delay = 500;
+    var data_len = 20;
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/vbat", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          document.getElementById("vbat").innerHTML = this.responseText;
+        }
+      };
+      xhttp.send();
+    }, 1000);
+
+    var chartT = new Highcharts.Chart({
+      chart: { renderTo: "chart-temperature" },
+      title: { text: "Current Temperature" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 1,
+        title: { text: "Temperature (&#8451;)" },
+      },
+      credits: { enabled: false },
+    });
+
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/temperature", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartT.series[0].data.length > data_len) {
+            chartT.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartT.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+
+    var chartP = new Highcharts.Chart({
+      chart: { renderTo: "chart-pressure" },
+      title: { text: "Current Pressure" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 2500,
+        title: { text: "Pressure (mmHg)" },
+      },
+      credits: { enabled: false },
+    });
+
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/pressure", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartP.series[0].data.length > data_len) {
+            chartP.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartP.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+
+    var chartA = new Highcharts.Chart({
+      chart: { renderTo: "chart-altitude" },
+      title: { text: "Current Altitude" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 100,
+        title: { text: "Altitude (m)" },
+      },
+      credits: { enabled: false },
+    });
+
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/altitude", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartA.series[0].data.length > data_len) {
+            chartA.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartA.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartAx = new Highcharts.Chart({
+      chart: { renderTo: "chart-ax" },
+      title: { text: "Ax" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 1,
+        title: { text: "Ax (rad/s2)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/ax", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartAx.series[0].data.length > data_len) {
+            chartAx.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartAx.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartAy = new Highcharts.Chart({
+      chart: { renderTo: "chart-ay" },
+      title: { text: "Ay" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 1,
+        title: { text: "Ay (rad/s2)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/ay", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartAy.series[0].data.length > data_len) {
+            chartAy.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartAy.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartAz = new Highcharts.Chart({
+      chart: { renderTo: "chart-az" },
+      title: { text: "Az" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 1,
+        title: { text: "Az (rad/s2)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/az", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartAz.series[0].data.length > data_len) {
+            chartAz.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartAz.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartGx = new Highcharts.Chart({
+      chart: { renderTo: "chart-gx" },
+      title: { text: "Gx" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 5,
+        title: { text: "Gx (rad)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/gx", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartGx.series[0].data.length > data_len) {
+            chartGx.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartGx.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartGy = new Highcharts.Chart({
+      chart: { renderTo: "chart-gy" },
+      title: { text: "Gy" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 5,
+        title: { text: "Gy (rad)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/gy", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartGy.series[0].data.length > data_len) {
+            chartGy.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartGy.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+    var chartGz = new Highcharts.Chart({
+      chart: { renderTo: "chart-gz" },
+      title: { text: "Gz" },
+      series: [
+        {
+          showInLegend: false,
+          data: [],
+        },
+      ],
+      plotOptions: {
+        line: { animation: false, dataLabels: { enabled: true } },
+        series: { color: "#059e8a" },
+      },
+      xAxis: { type: "datetime", dateTimeLabelFormats: { second: "%H:%M:%S" } },
+      yAxis: {
+        minRange: 5,
+        title: { text: "Gz (rad)" },
+      },
+      credits: { enabled: false },
+    });
+    setInterval(function () {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/gz", true);
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var myVar = this.responseText;
+          var x = new Date().getTime() + (5 * 3600 + 45 * 60) * 1000,
+            y = parseFloat(myVar);
+          if (chartGz.series[0].data.length > data_len) {
+            chartGz.series[0].addPoint([x, y], true, true, true);
+          } else {
+            chartGz.series[0].addPoint([x, y], true, false, true);
+          }
+        }
+      };
+      xhttp.send();
+    }, delay);
+  </script>
+</html>
